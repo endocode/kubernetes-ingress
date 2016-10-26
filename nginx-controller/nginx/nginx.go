@@ -27,6 +27,7 @@ type IngressNginxConfig struct {
 // Upstream describes an NGINX upstream
 type Upstream struct {
 	Name            string
+	SSL             bool
 	UpstreamServers []UpstreamServer
 }
 
@@ -67,6 +68,7 @@ type NginxMainConfig struct {
 func NewUpstreamWithDefaultServer(name string) Upstream {
 	return Upstream{
 		Name:            name,
+		SSL:             false,
 		UpstreamServers: []UpstreamServer{UpstreamServer{Address: "127.0.0.1", Port: "8181"}},
 	}
 }

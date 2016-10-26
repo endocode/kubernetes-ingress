@@ -212,6 +212,10 @@ func (cnf *Configurator) createUpstream(ingEx *IngressEx, name string, backend *
 		}
 		if len(upsServers) > 0 {
 			ups.UpstreamServers = upsServers
+			// It's in Kubernetes nature, that all endpoints have the same port.
+			if upsServers[0].Port == "443" {
+			    ups.SSL = true
+			}
 		}
 	}
 

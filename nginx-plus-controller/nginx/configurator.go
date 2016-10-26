@@ -90,7 +90,8 @@ func (cnf *Configurator) generateNginxCfg(ingEx *IngressEx, pems map[string]stri
 
 	if ingEx.Ingress.Spec.Backend != nil {
 		name := getNameForUpstream(ingEx.Ingress, emptyHost, ingEx.Ingress.Spec.Backend.ServiceName)
-		upstream := cnf.createUpstream(name, spServices[ingEx.Ingress.Spec.Backend.ServiceName])
+		ssl := ingEx.Ingress.Spec.Backend.ServicePort.String() == "443"
+		upstream := cnf.createUpstream(name, ssl, spServices[ingEx.Ingress.Spec.Backend.ServiceName])
 		upstreams[name] = upstream
 	}
 
@@ -124,7 +125,8 @@ func (cnf *Configurator) generateNginxCfg(ingEx *IngressEx, pems map[string]stri
 			upsName := getNameForUpstream(ingEx.Ingress, rule.Host, path.Backend.ServiceName)
 
 			if _, exists := upstreams[upsName]; !exists {
-				upstream := cnf.createUpstream(upsName, spServices[path.Backend.ServiceName])
+				ssl := path.Backend.ServicePort.String() == "443"
+				upstream := cnf.createUpstream(upsName, ssl, spServices[path.Backend.ServiceName])
 				upstreams[upsName] = upstream
 			}
 
@@ -244,8 +246,8 @@ func createLocation(path string, upstream Upstream, cfg *Config, websocket bool)
 	return loc
 }
 
-func (cnf *Configurator) createUpstream(name string, stickyCookie string) Upstream {
-	return Upstream{Name: name, StickyCookie: stickyCookie}
+func (cnf *Configurator) createUpstream(name string, ssl bool, stickyCookie string) Upstream {
+	return Upstream{Name: name, SSL: ssl, StickyCookie: stickyCookie}
 }
 
 func pathOrDefault(path string) string {

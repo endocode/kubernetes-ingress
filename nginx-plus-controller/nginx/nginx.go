@@ -48,6 +48,7 @@ type IngressNginxConfig struct {
 // Upstream describes an NGINX upstream
 type Upstream struct {
 	Name            string
+	SSL		bool
 	UpstreamServers []UpstreamServer
 	StickyCookie    string
 }
